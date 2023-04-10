@@ -27,13 +27,28 @@ const ProductManagerment = ({products, onRemove}: Props) => {
         key: "price",
       },
       {
+        title: "Image",
+        dataIndex: "img",
+        key: "img",
+        render: (url) => (
+          <img src={url} className="w-[50px] h-auto rounded-xl"></img>
+        ),
+      },
+      {
         title: "Action",
         key: "action",
         render: (record) => (
           <Space size="middle">
-            <button onClick={() => onRemove(record._id)}>Delete</button>
+            <button
+              className="px-[20px] py-[5px] text-white bg-red-500 rounded-2xl"
+              onClick={() => onRemove(record._id)}
+            >
+              Delete
+            </button>
             <Link to={`/admin/products/${record._id}/update`}>
-              <button>Update</button>
+              <button className="px-[20px] py-[5px] text-white bg-indigo-600 rounded-2xl">
+                Update
+              </button>
             </Link>
           </Space>
         ),

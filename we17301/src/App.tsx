@@ -20,6 +20,8 @@ import { IProduct } from "./interfaces/product";
 import { ICategory } from "./interfaces/category";
 import Signin from "./pages/Signin";
 import CategoriesProductPage from "./pages/CategoriesProductPage";
+import { upload } from "./api/upload";
+import Signup from "./pages/Signup";
 
 function App() {
   const [products, setProducts] = useState<IProduct[]>([]);
@@ -51,28 +53,29 @@ function App() {
   };
   const onHandleUpdate = async (product: IProduct, id: string | number) => {
     try {
-      await updateProduct(product, id);
+      const updatedProduct = {
+        name: product.name,
+        price: product.price,
+        img: product.img,
+        categoryId: product.categoryId,
+        desc: product.desc,
+      };
+      updateProduct(updatedProduct, id)
     } catch (error) {}
   };
   const onHandleCreate = async (product: IProduct) => {
     try {
-      await createProduct(product);
-    } catch (error) {}
+      const formData = new FormData();
+      formData.append("files", product.img[0]);
+      const result = await upload(formData);
+      createProduct({
+        ...product,
+        img: result.data.urls[0].url,
+      })?.then((res) => setProducts([...products, res.data.product]));
+    } catch (error) {
+
+    }
   };
-  //   const onHandleRemove = async (id: string | number) => {
-  //   try {
-  //     const { data } = await removeProduct(id);
-  //     console.log(data);
-  //     const newData = await getProducts()
-  //     setProducts(newData.data.data);
-
-  //     // getProducts().then(({data}) => setProducts(data))
-  //     // setProducts(data)
-
-  //   } catch (error) {
-
-  //   }
-  // }
   return (
     <div className="App">
       <Routes>
@@ -91,8 +94,8 @@ function App() {
             <Route path=":id" element={<CategoriesProductPage />} />
           </Route>
           <Route path="signin" element={<Signin />} />
+          <Route path="signup" element={<Signup />} />
         </Route>
-
         <Route path="admin" element={<AdminLayout />}>
           <Route index element={<Dashboard />} />
           <Route path="products">
@@ -107,12 +110,14 @@ function App() {
             />
             <Route
               path="add"
-              element={<AddProduct onCreate={onHandleCreate} />}
+              element={
+                <AddProduct onCreate={onHandleCreate} categories={categories} />
+              }
             />
             <Route
               path=":id/update"
               element={
-                <UpdateProduct products={products} onUpdate={onHandleUpdate} />
+                <UpdateProduct products={products} onUpdate={onHandleUpdate} categories={categories} />
               }
             />
           </Route>

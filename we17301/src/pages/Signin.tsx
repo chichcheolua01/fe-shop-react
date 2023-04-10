@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { signin } from "../api/auth";
 import { useNavigate } from "react-router-dom";
@@ -8,6 +8,8 @@ type Props = {};
 
 const Signin = (props: Props) => {
   const navigate = useNavigate();
+  const [error, setError] = useState(null);
+
   const {
     register,
     handleSubmit,
@@ -23,7 +25,7 @@ const Signin = (props: Props) => {
         navigate("/");
       }
     } catch (error: any) {
-      console.log(error.response.data);
+      setError(error.response.data.message);
     }
   };
   return (
@@ -34,6 +36,7 @@ const Signin = (props: Props) => {
             <h1 className="text-2xl font-bold sm:text-3xl">
               Get started today!
             </h1>
+            <p className="mt-[20px] text-red-500">{error}</p>
           </div>
           <form
             action=""
@@ -113,7 +116,7 @@ const Signin = (props: Props) => {
             <div className="flex items-center justify-between">
               <p className="text-sm text-gray-500">
                 No account?
-                <a className="underline" href="">
+                <a className="underline" href="/signup">
                   Sign up
                 </a>
               </p>
